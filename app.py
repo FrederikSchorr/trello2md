@@ -174,13 +174,15 @@ else:
                             if board_data:
                                 st.session_state.markdown_content = generate_markdown(board_data, progress_placeholder)
                                 st.session_state.board_name = board_data['name']
+                                st.session_state.export_date = datetime.now().strftime("%Y-%m-%d")
 
                     if 'markdown_content' in st.session_state:
                         with col2:
+                            safe_board_name = re.sub(r'[\\/:*?"<>|]', '', st.session_state.board_name)
                             st.download_button(
                                 label="Download Markdown File",
                                 data=st.session_state.markdown_content,
-                                file_name=f"{st.session_state.board_name.replace(' ', '_')}.md",
+                                file_name=f"{st.session_state.export_date} Trello {safe_board_name}.md",
                                 mime="text/markdown"
                             )
 
