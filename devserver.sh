@@ -1,3 +1,3 @@
 #!/bin/sh
 source .venv/bin/activate
-python -u -m flask --app main run -p $PORT --debug
+streamlit run app.py --server.headless=true --server.address=0.0.0.0 --server.port ${PORT:-8501} --server.enableCORS=false --server.enableXsrfProtection=false
