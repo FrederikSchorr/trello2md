@@ -1,0 +1,13 @@
+{
+  "name": "Trello to Markdown Exporter",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "postCreateCommand": "pip install -r requirements.txt",
+  "postStartCommand": "nohup streamlit run app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true --server.enableCORS false --server.enableXsrfProtection false > /tmp/streamlit.log 2>&1 &",
+  "forwardPorts": [8501],
+  "portsAttributes": {
+    "8501": {
+      "label": "Trello Exporter",
+      "onAutoForward": "openPreview"
+    }
+  }
+}
