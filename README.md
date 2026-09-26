@@ -5,7 +5,6 @@ This is a Streamlit web application for exporting Trello boards to a detailed ma
 ## Features
 
 *   Connects to your Trello account using your API key and token.
-*   Password protected access to the application.
 *   Lists your available workspaces and boards.
 *   Filters for open boards and lists, ignoring closed/archived ones.
 *   Generates a comprehensive markdown file that includes:
@@ -19,11 +18,13 @@ This is a Streamlit web application for exporting Trello boards to a detailed ma
 
 ## How to Run in GitHub Codespaces (recommended)
 
-This repo is set up with a devcontainer, so it needs no local setup.
+This repo is set up with a devcontainer, so it needs no local setup. The
+Codespaces port is private by default (only accessible to you, signed in
+with your GitHub account), so no in-app password is needed.
 
 1.  **Set your secrets** (once, before the first run):
     *   On GitHub, go to this repo → **Settings → Secrets and variables → Codespaces**.
-    *   Add three repository secrets: `TRELLO_API_KEY`, `TRELLO_API_TOKEN`, `APP_PASSWORD`.
+    *   Add two repository secrets: `TRELLO_API_KEY`, `TRELLO_API_TOKEN`.
 2.  **Start a Codespace:**
     *   On the repo's main page, click **Code → Codespaces → Create codespace on main**.
     *   Wait for the container to build (installs `requirements.txt` automatically) and for Streamlit to start.
@@ -38,20 +39,6 @@ This repo is set up with a devcontainer, so it needs no local setup.
     ```
     TRELLO_API_KEY="your_api_key"
     TRELLO_API_TOKEN="your_api_token"
-    APP_PASSWORD="your_app_password"
     ```
 2.  `pip install -r requirements.txt`
 3.  `streamlit run app.py`
-
-## Running with Docker
-
-```bash
-docker build -t trello-exporter .
-docker run -p 8080:8080 --env-file .env trello-exporter
-```
-
-## Deployed Service URL
-
-https://idx-trello-md-v4-09031501-17999627323.europe-west4.run.app
-
-(Deployed manually via `cloudbuild.yaml` — kept as an optional Cloud Run deployment path; not required for occasional local/Codespaces use.)

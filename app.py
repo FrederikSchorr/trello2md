@@ -12,35 +12,6 @@ load_dotenv()
 # Trello API credentials
 TRELLO_API_KEY = os.getenv("TRELLO_API_KEY")
 TRELLO_API_TOKEN = os.getenv("TRELLO_API_TOKEN")
-APP_PASSWORD = os.getenv("APP_PASSWORD")
-
-def check_password():
-    """Returns `True` if the user had the correct password."""
-
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if st.session_state["password"] == APP_PASSWORD:
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # don't store password
-        else:
-            st.session_state["password_correct"] = False
-
-    if "password_correct" not in st.session_state:
-        # First run, show input for password.
-        st.text_input(
-            "Password", type="password", on_change=password_entered, key="password"
-        )
-        return False
-    elif not st.session_state["password_correct"]:
-        # Password not correct, show input + error.
-        st.text_input(
-            "Password", type="password", on_change=password_entered, key="password"
-        )
-        st.error("😕 Password incorrect")
-        return False
-    else:
-        # Password correct.
-        return True
 
 def sanitize_markdown(text):
     # Remove headings
@@ -172,48 +143,47 @@ def generate_markdown(board_data, progress_placeholder):
     progress_placeholder.empty()
     return markdown
 
-if check_password():
-    # Streamlit UI
-    st.title("Trello to Markdown Exporter")
+# Streamlit UI
+st.title("Trello to Markdown Exporter")
 
-    if not TRELLO_API_KEY or not TRELLO_API_TOKEN:
-        st.warning("Trello API key and token not found. Please create a .env file with TRELLO_API_KEY and TRELLO_API_TOKEN.")
-    else:
-        workspaces = get_trello_workspaces()
-        if workspaces:
-            workspace_names = [w['displayName'] for w in workspaces]
-            selected_workspace_name = st.selectbox("Select a Trello Workspace", workspace_names)
-            
-            if selected_workspace_name:
-                selected_workspace_id = [w['id'] for w in workspaces if w['displayName'] == selected_workspace_name][0]
-                boards = get_trello_boards(selected_workspace_id)
-                
-                if boards:
-                    board_names = [b['name'] for b in boards]
-                    selected_board_name = st.selectbox("Select a Trello Board", board_names)
+if not TRELLO_API_KEY or not TRELLO_API_TOKEN:
+    st.warning("Trello API key and token not found. Please create a .env file with TRELLO_API_KEY and TRELLO_API_TOKEN.")
+else:
+    workspaces = get_trello_workspaces()
+    if workspaces:
+        workspace_names = [w['displayName'] for w in workspaces]
+        selected_workspace_name = st.selectbox("Select a Trello Workspace", workspace_names)
 
-                    if selected_board_name:
-                        selected_board_id = [b['id'] for b in boards if b['name'] == selected_board_name][0]
-                        
-                        col1, col2 = st.columns(2)
+        if selected_workspace_name:
+            selected_workspace_id = [w['id'] for w in workspaces if w['displayName'] == selected_workspace_name][0]
+            boards = get_trello_boards(selected_workspace_id)
 
-                        with col1:
-                            progress_placeholder = st.empty()
-                            if st.button("Generate Markdown"):
-                                board_data = get_trello_board_data(selected_board_id)
-                                if board_data:
-                                    st.session_state.markdown_content = generate_markdown(board_data, progress_placeholder)
-                                    st.session_state.board_name = board_data['name']
-                        
-                        if 'markdown_content' in st.session_state:
-                            with col2:
-                                st.download_button(
-                                    label="Download Markdown File",
-                                    data=st.session_state.markdown_content,
-                                    file_name=f"{st.session_state.board_name.replace(' ', '_')}.md",
-                                    mime="text/markdown"
-                                )
-                                
-        if 'markdown_content' in st.session_state:
-            st.subheader("Generated Markdown Preview")
-            st.markdown(st.session_state.markdown_content)
+            if boards:
+                board_names = [b['name'] for b in boards]
+                selected_board_name = st.selectbox("Select a Trello Board", board_names)
+
+                if selected_board_name:
+                    selected_board_id = [b['id'] for b in boards if b['name'] == selected_board_name][0]
+
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        progress_placeholder = st.empty()
+                        if st.button("Generate Markdown"):
+                            board_data = get_trello_board_data(selected_board_id)
+                            if board_data:
+                                st.session_state.markdown_content = generate_markdown(board_data, progress_placeholder)
+                                st.session_state.board_name = board_data['name']
+
+                    if 'markdown_content' in st.session_state:
+                        with col2:
+                            st.download_button(
+                                label="Download Markdown File",
+                                data=st.session_state.markdown_content,
+                                file_name=f"{st.session_state.board_name.replace(' ', '_')}.md",
+                                mime="text/markdown"
+                            )
+
+    if 'markdown_content' in st.session_state:
+        st.subheader("Generated Markdown Preview")
+        st.markdown(st.session_state.markdown_content)
