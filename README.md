@@ -33,6 +33,17 @@ with your GitHub account), so no in-app password is needed.
     *   Close the browser tab. Codespaces stop automatically after a period of inactivity, and the free tier (60 core-hours/month on personal accounts) comfortably covers occasional use.
     *   You can delete the codespace afterwards under **github.com/codespaces** if you don't plan to reuse it.
 
+### Troubleshooting: port shows a 502 / nothing loads
+
+If the forwarded port doesn't respond, the auto-start may not have run yet.
+In the Codespace's **Terminal** tab, check the log and start it manually:
+```bash
+cat /tmp/streamlit.log   # see if/why it failed
+pip install -r requirements.txt
+streamlit run app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+```
+Leave that terminal open, then reopen the port from the **Ports** tab.
+
 ## Running locally (alternative)
 
 1.  Create a `.env` file in the project root:
